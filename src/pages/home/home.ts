@@ -12,11 +12,53 @@ export class HomePage {
   LARGURA; 
   frames = 0;
 
+  chao = {
+    y: 550,
+    altura:50, 
+    cor: "#ffdf70",
+
+     desenhar : () => {
+      
+       this.ctx.fillStyle = this.chao.cor;
+       this.ctx.fillRect(0, this.chao.y, this.LARGURA, this.chao.altura);
+    }
+  }
+
+  bloco = {
+    x: 50,
+    y: 0,
+    altura: 50,
+    largura: 50,
+    cor: "#ff4e4e",
+    gravidade: 1.5,
+    valocidade: 0,
+    forcaDoPulo: 15,
+
+    atualizar : () => {
+      this.bloco.valocidade += this.bloco.gravidade;
+      this.bloco.y += this.bloco.valocidade;
+
+      if(this.bloco.y > this.chao.y - this.bloco.altura){
+        this.bloco.y = this.chao.y - this.bloco.altura;
+      }
+    },
+
+    pular : () => {
+      this.bloco.valocidade = -this.bloco.forcaDoPulo;
+    },
+
+    desenhar : () => {
+      this.ctx.fillStyle = this.bloco.cor;
+      this.ctx.fillRect(this.bloco.x, this.bloco.y, this.bloco.largura, this.bloco.altura);
+    }
+
+  }
+
   constructor(public navCtrl: NavController) {
     this.main();
   }
-  clique(event){
-    alert('oi');
+  clique = (event) => {
+    this.bloco.pular();
   }
 
   main(){
@@ -41,20 +83,23 @@ export class HomePage {
     this.rodar();
   }
  
-  rodar(){
-    // this.atualizar();
-    // this.desenhar();
+  rodar = () => {
+    this.atualizar();
+    this.desenhar();
 
-    // window.requestAnimationFrame(this.rodar);
+    window.requestAnimationFrame(this.rodar);
   };
 
   atualizar(){
     this.frames++;
+    this.bloco.atualizar();
   };
 
   desenhar(){
     this.ctx.fillStyle = "#50beff";
     this.ctx.fillRect(0, 0, this.LARGURA, this.ALTURA);
+    this.chao.desenhar();
+    this.bloco.desenhar();
   }
 
 }
