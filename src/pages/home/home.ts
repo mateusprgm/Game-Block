@@ -1,5 +1,8 @@
-import { Component } from '@angular/core';
+import { Component, enableProdMode } from '@angular/core';
 import { NavController } from 'ionic-angular';
+import { Observable } from 'rxjs/Observable';
+
+enableProdMode()
 
 @Component({
   selector: 'page-home',
@@ -11,6 +14,9 @@ export class HomePage {
   ALTURA; 
   LARGURA; 
   frames = 0;
+  velocidade = 6;
+
+  
 
   chao = {
     y: 550,
@@ -53,10 +59,63 @@ export class HomePage {
     }
 
   }
+  
+   
+
+  obstaculos: any  =  {
+    _obs: [],
+    cores: ["#ffbc1c", "#ff1c1c", "#ff85e1", "#52a7ff", "#78ff5d"],
+    tempoInsere: 30,
+
+    inserir: function () {
+      this.obstaculos._obs.push({
+        x: this.LARGURA,
+        largura: 30 + Math.floor(21 * Math.random()),
+        altura: 30 + Math.floor(120 * Math.random()),
+        cor: this.obstaculos.cores[Math.floor(5 * Math.random())]
+        
+      });
+
+      this.obstaculos.tempoInsere = 30;
+      
+    },
+
+    atualizar : () => {
+      
+
+      if(this.obstaculos.tempoInsere == 0){
+        // this.obstaculos.inserir();
+      }else{
+        this.obstaculos.tempoInsere--;
+      }
+      console.log(this.obstaculos._obs.length);
+
+      for(let i = 0, tam = this.obstaculos._obs.length; i < tam; i++){
+        let obs = this.obstaculos._obs[i];
+
+        obs.x -= this.velocidade;
+
+        if(obs.x <= -obs.largura){
+          this.obstaculos._obs.splice(i, 1);
+          tam--;
+          i--;
+        }
+      }
+    },
+
+    desenhar : () => {
+      for(let i = 0, tam = this.obstaculos._obs.length; i < tam;){
+        let obs = this.obstaculos._obs[i];
+        this.ctx.fillStyle = obs.cor;
+        this.ctx.fillRect(this.obstaculos._obs.x, (this.chao.y- this.bloco.y), this.obstaculos._obs.largura, this.obstaculos._obs.altura);
+      }
+    }
+  }
 
   constructor(public navCtrl: NavController) {
     this.main();
   }
+
   clique = (event) => {
     this.bloco.pular();
   }
@@ -93,12 +152,14 @@ export class HomePage {
   atualizar(){
     this.frames++;
     this.bloco.atualizar();
+    this.obstaculos.atualizar();
   };
 
   desenhar(){
     this.ctx.fillStyle = "#50beff";
     this.ctx.fillRect(0, 0, this.LARGURA, this.ALTURA);
     this.chao.desenhar();
+    this.obstaculos.desenhar();
     this.bloco.desenhar();
   }
 
