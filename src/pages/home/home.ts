@@ -46,8 +46,9 @@ export class HomePage {
     largura: 50,
     cor: "#ff4e4e",
     gravidade: 1.5,
-    valocidade: 0,
+    valocidade: 6,
     forcaDoPulo: 25,
+    score: 0,
     
 
     atualizar : () => {
@@ -58,6 +59,7 @@ export class HomePage {
         && this.estadoAtual != this.estados.perdeu){
         this.bloco.y = this.chao.y - this.bloco.altura;
         this.bloco.valocidade = 0;
+        this.bloco.score = 0;
       }
     },
 
@@ -84,7 +86,8 @@ export class HomePage {
     inserir:  () => {
      this.obstaculos._obs.push({
         x: this.LARGURA,
-        largura: 30 + Math.floor(21 * Math.random()),
+        // largura: 30 + Math.floor(21 * Math.random()),
+        largura: 50,
         altura: 30 + Math.floor(120 * Math.random()),
         cor: this.obstaculos.cores[Math.floor(5 * Math.random())]
      })
@@ -114,9 +117,9 @@ export class HomePage {
           && this.bloco.y + this.bloco.altura >= this.chao.y - obs.altura){
             this.estadoAtual = this.estados.perdeu;
 
-        }
-
-        if(obs.x <= -obs.largura){
+        }else if(obs.x == 0){
+          this.bloco.score++;
+        }else if(obs.x <= -obs.largura){
           this.obstaculos._obs.splice(i, 1);
           tam--;
           i--;
@@ -124,8 +127,14 @@ export class HomePage {
       }
     },
 
-    reset : () => {
+    limpar : () => {
       this.obstaculos._obs = [];
+    },
+
+    reset : () => {
+      this.bloco.valocidade = 0;
+      this.bloco.y = 0;
+      
     },
 
     desenhar : () => {
@@ -148,8 +157,10 @@ export class HomePage {
       this.estadoAtual = this.estados.jogando;
     }else if(this.estadoAtual == this.estados.perdeu){
       this.estadoAtual = this.estados.jogar;
+      this.obstaculos.limpar();
       this.bloco.valocidade = 0;
       this.bloco.y = 0;
+      this.bloco.score = 0;
     }
     
   }
@@ -191,13 +202,17 @@ export class HomePage {
     if(this.estadoAtual == this.estados.jogando){
       this.obstaculos.atualizar();
     }else if(this.estadoAtual == this.estados.perdeu){
-      this.obstaculos.reset();
+      this.obstaculos.limpar();
     }
   };
 
   desenhar(){
     this.ctx.fillStyle = "#50beff";
     this.ctx.fillRect(0, 0, this.LARGURA, this.ALTURA);
+    
+    this.ctx.fillStyle = "#FFF";
+    this.ctx.font = "50px Arial";
+    this.ctx.fillText(this.bloco.score, 10, 48);
 
     if(this.estadoAtual == this.estados.jogar){
       this.ctx.fillStyle = "green";
@@ -205,6 +220,20 @@ export class HomePage {
     }else if(this.estadoAtual == this.estados.perdeu){
       this.ctx.fillStyle = "red";
       this.ctx.fillRect(this.LARGURA / 2 - 50, this.ALTURA / 2 - 50, 100, 100);
+      this.ctx.save();
+      this.ctx.translate(this.LARGURA / 2, this.ALTURA / 2);
+      this.ctx.fillStyle = "#FFF";
+      
+      if(this.bloco.score < 10){
+        this.ctx.fillText(this.bloco.score, -13, 19);  
+      }else if(this.bloco.score >= 10 && this.bloco.score < 100){
+        this.ctx.fillText(this.bloco.score, -26, 19);
+      }else{
+        this.ctx.fillText(this.bloco.score, -39, 19);
+      }
+      
+      
+      this.ctx.restore();
     }else if(this.estadoAtual == this.estados.jogando){
       this.obstaculos.desenhar();
     }
