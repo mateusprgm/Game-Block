@@ -16,6 +16,13 @@ export class HomePage {
   LARGURA; 
   frames = 0;
   velocidade = 6;
+  estadoAtual;
+  
+  estados = {
+    jogar: 0,
+    jogando: 1,
+    perdeu: 2,
+  }
   
 
   
@@ -40,15 +47,17 @@ export class HomePage {
     cor: "#ff4e4e",
     gravidade: 1.5,
     valocidade: 0,
-    forcaDoPulo: 15,
+    forcaDoPulo: 25,
     
 
     atualizar : () => {
       this.bloco.valocidade += this.bloco.gravidade;
       this.bloco.y += this.bloco.valocidade;
 
-      if(this.bloco.y > this.chao.y - this.bloco.altura){
+      if(this.bloco.y > this.chao.y - this.bloco.altura
+        && this.estadoAtual != this.estados.perdeu){
         this.bloco.y = this.chao.y - this.bloco.altura;
+        this.bloco.valocidade = 0;
       }
     },
 
@@ -86,7 +95,7 @@ export class HomePage {
 
     atualizar : () => {
       
-      console.log(this.obstaculos._obs);
+      
 
       if(this.obstaculos.tempoInsere == 0){
         this.obstaculos.inserir();
@@ -100,12 +109,23 @@ export class HomePage {
 
         obs.x -= this.velocidade;
 
+        if(this.bloco.x < obs.x + obs.largura 
+          && this.bloco.x + this.bloco.largura >= obs.x 
+          && this.bloco.y + this.bloco.altura >= this.chao.y - obs.altura){
+            this.estadoAtual = this.estados.perdeu;
+
+        }
+
         if(obs.x <= -obs.largura){
           this.obstaculos._obs.splice(i, 1);
           tam--;
           i--;
         }
       }
+    },
+
+    reset : () => {
+      this.obstaculos._obs = [];
     },
 
     desenhar : () => {
@@ -122,7 +142,16 @@ export class HomePage {
   }
 
   clique = (event) => {
-    this.bloco.pular();
+    if(this.estadoAtual == this.estados.jogando){
+      this.bloco.pular();
+    }else if(this.estadoAtual == this.estados.jogar){
+      this.estadoAtual = this.estados.jogando;
+    }else if(this.estadoAtual == this.estados.perdeu){
+      this.estadoAtual = this.estados.jogar;
+      this.bloco.valocidade = 0;
+      this.bloco.y = 0;
+    }
+    
   }
 
   main(){
@@ -144,6 +173,7 @@ export class HomePage {
     document.body.appendChild(this.canvas);
     document.addEventListener("mousedown", this.clique);
     this.obstaculos.inserir();
+    this.estadoAtual = this.estados.jogar;
     this.rodar();
   }
  
@@ -157,14 +187,29 @@ export class HomePage {
   atualizar(){
     this.frames++;
     this.bloco.atualizar();
-    this.obstaculos.atualizar();
+
+    if(this.estadoAtual == this.estados.jogando){
+      this.obstaculos.atualizar();
+    }else if(this.estadoAtual == this.estados.perdeu){
+      this.obstaculos.reset();
+    }
   };
 
   desenhar(){
     this.ctx.fillStyle = "#50beff";
     this.ctx.fillRect(0, 0, this.LARGURA, this.ALTURA);
+
+    if(this.estadoAtual == this.estados.jogar){
+      this.ctx.fillStyle = "green";
+      this.ctx.fillRect(this.LARGURA / 2, this.ALTURA / 2 - 50, 100, 100);
+    }else if(this.estadoAtual == this.estados.perdeu){
+      this.ctx.fillStyle = "red";
+      this.ctx.fillRect(this.LARGURA / 2 - 50, this.ALTURA / 2 - 50, 100, 100);
+    }else if(this.estadoAtual == this.estados.jogando){
+      this.obstaculos.desenhar();
+    }
+
     this.chao.desenhar();
-    this.obstaculos.desenhar();
     this.bloco.desenhar();
   }
 
