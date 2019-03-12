@@ -86,6 +86,7 @@ export class HomePage {
 
     atualizar : () => {
       
+      console.log(this.obstaculos._obs);
 
       if(this.obstaculos.tempoInsere == 0){
         this.obstaculos.inserir();
@@ -111,7 +112,7 @@ export class HomePage {
       for(let i = 0, tam = this.obstaculos._obs.length; i < tam; i++){
         let obs = this.obstaculos._obs[i];
         this.ctx.fillStyle = obs.cor;
-        this.ctx.fillRect(obs.x, (this.chao.y - obs.y), obs.largura, obs.altura);
+        this.ctx.fillRect(obs.x, (this.chao.y - obs.altura), obs.largura, obs.altura);
       }
     }
   }
