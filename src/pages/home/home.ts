@@ -16,7 +16,7 @@ export class HomePage {
   LARGURA; 
   frames = 0;
   velocidade = 6;
-  teste = true;
+  
 
   
 
@@ -77,13 +77,10 @@ export class HomePage {
         x: this.LARGURA,
         largura: 30 + Math.floor(21 * Math.random()),
         altura: 30 + Math.floor(120 * Math.random()),
-        cor: this.obstaculos.cores[Math.floor(50 * Math.random())]
+        cor: this.obstaculos.cores[Math.floor(5 * Math.random())]
      })
 
-
-    
       this.obstaculos.tempoInsere = 30;
-      // console.log(this.obstaculos._obs);
       
     },
 
@@ -91,7 +88,7 @@ export class HomePage {
       
 
       if(this.obstaculos.tempoInsere == 0){
-       this.obstaculos.inserir();
+        this.obstaculos.inserir();
       }else{
         this.obstaculos.tempoInsere--;
       }
@@ -111,18 +108,11 @@ export class HomePage {
     },
 
     desenhar : () => {
-      if(this.teste == true){
-        // for(let l = 0, tam = this.obstaculos._obs.length; l < tam;){
-          
-        // }
-        // this.teste = false;
+      for(let i = 0, tam = this.obstaculos._obs.length; i < tam; i++){
+        let obs = this.obstaculos._obs[i];
+        this.ctx.fillStyle = obs.cor;
+        this.ctx.fillRect(obs.x, (this.chao.y - obs.y), obs.largura, obs.altura);
       }
-      
-      // for(let i = 0, tam = this.obstaculos._obs.length; i < tam;){
-        // let obs = this.obstaculos._obs[i];
-        // this.ctx.fillStyle = obs.cor;
-        // this.ctx.fillRect(obs.x, (this.chao.y- this.bloco.y), obs.largura, obs.altura);
-      // }
     }
   }
 
