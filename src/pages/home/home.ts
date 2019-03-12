@@ -1,6 +1,7 @@
 import { Component, enableProdMode } from '@angular/core';
 import { NavController } from 'ionic-angular';
-import { Observable } from 'rxjs/Observable';
+
+
 
 enableProdMode()
 
@@ -15,6 +16,7 @@ export class HomePage {
   LARGURA; 
   frames = 0;
   velocidade = 6;
+  teste = true;
 
   
 
@@ -39,6 +41,7 @@ export class HomePage {
     gravidade: 1.5,
     valocidade: 0,
     forcaDoPulo: 15,
+    
 
     atualizar : () => {
       this.bloco.valocidade += this.bloco.gravidade;
@@ -60,23 +63,27 @@ export class HomePage {
 
   }
   
-   
+    
+    
 
-  obstaculos: any  =  {
-    _obs: [],
+
+    obstaculos = {
+    _obs : <any>[],
     cores: ["#ffbc1c", "#ff1c1c", "#ff85e1", "#52a7ff", "#78ff5d"],
-    tempoInsere: 30,
+    tempoInsere: 0,
 
-    inserir: function () {
-      this.obstaculos._obs.push({
+    inserir:  () => {
+     this.obstaculos._obs.push({
         x: this.LARGURA,
         largura: 30 + Math.floor(21 * Math.random()),
         altura: 30 + Math.floor(120 * Math.random()),
-        cor: this.obstaculos.cores[Math.floor(5 * Math.random())]
-        
-      });
+        cor: this.obstaculos.cores[Math.floor(50 * Math.random())]
+     })
 
+
+    
       this.obstaculos.tempoInsere = 30;
+      // console.log(this.obstaculos._obs);
       
     },
 
@@ -84,11 +91,11 @@ export class HomePage {
       
 
       if(this.obstaculos.tempoInsere == 0){
-        // this.obstaculos.inserir();
+       this.obstaculos.inserir();
       }else{
         this.obstaculos.tempoInsere--;
       }
-      console.log(this.obstaculos._obs.length);
+      
 
       for(let i = 0, tam = this.obstaculos._obs.length; i < tam; i++){
         let obs = this.obstaculos._obs[i];
@@ -104,11 +111,18 @@ export class HomePage {
     },
 
     desenhar : () => {
-      for(let i = 0, tam = this.obstaculos._obs.length; i < tam;){
-        let obs = this.obstaculos._obs[i];
-        this.ctx.fillStyle = obs.cor;
-        this.ctx.fillRect(this.obstaculos._obs.x, (this.chao.y- this.bloco.y), this.obstaculos._obs.largura, this.obstaculos._obs.altura);
+      if(this.teste == true){
+        // for(let l = 0, tam = this.obstaculos._obs.length; l < tam;){
+          
+        // }
+        // this.teste = false;
       }
+      
+      // for(let i = 0, tam = this.obstaculos._obs.length; i < tam;){
+        // let obs = this.obstaculos._obs[i];
+        // this.ctx.fillStyle = obs.cor;
+        // this.ctx.fillRect(obs.x, (this.chao.y- this.bloco.y), obs.largura, obs.altura);
+      // }
     }
   }
 
@@ -138,7 +152,7 @@ export class HomePage {
 
     document.body.appendChild(this.canvas);
     document.addEventListener("mousedown", this.clique);
-
+    this.obstaculos.inserir();
     this.rodar();
   }
  
