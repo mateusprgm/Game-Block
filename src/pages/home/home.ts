@@ -135,8 +135,11 @@ export class HomePage {
 
     limpar : () => {
       this.obstaculos._obs = [];
+      this.record = parseInt(this.record);
+      
+      
       if(this.bloco.score > this.record){
-        localStorage.setItem("record", this.bloco.score.toString());
+         localStorage.setItem("record", this.bloco.score.toString());
       }
       
     },
