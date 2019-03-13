@@ -17,6 +17,7 @@ export class HomePage {
   frames = 0;
   velocidade = 6;
   estadoAtual;
+  record;
   
   estados = {
     jogar: 0,
@@ -59,7 +60,7 @@ export class HomePage {
         && this.estadoAtual != this.estados.perdeu){
         this.bloco.y = this.chao.y - this.bloco.altura;
         this.bloco.valocidade = 0;
-        this.bloco.score = 0;
+        
       }
     },
 
@@ -70,8 +71,12 @@ export class HomePage {
     desenhar : () => {
       this.ctx.fillStyle = this.bloco.cor;
       this.ctx.fillRect(this.bloco.x, this.bloco.y, this.bloco.largura, this.bloco.altura);
-    }
-
+    },
+    reset : () => {
+      this.bloco.valocidade = 0;
+      this.bloco.y = 0;
+      this.bloco.score = 0;      
+    },
   }
   
     
@@ -114,7 +119,8 @@ export class HomePage {
 
         if(this.bloco.x < obs.x + obs.largura 
           && this.bloco.x + this.bloco.largura >= obs.x 
-          && this.bloco.y + this.bloco.altura >= this.chao.y - obs.altura){
+          && this.bloco.y + this.bloco.altura >= this.chao.y - obs.altura
+        ){
             this.estadoAtual = this.estados.perdeu;
 
         }else if(obs.x == 0){
@@ -129,11 +135,9 @@ export class HomePage {
 
     limpar : () => {
       this.obstaculos._obs = [];
-    },
-
-    reset : () => {
-      this.bloco.valocidade = 0;
-      this.bloco.y = 0;
+      if(this.bloco.score > this.record){
+        localStorage.setItem("record", this.bloco.score.toString());
+      }
       
     },
 
@@ -160,9 +164,8 @@ export class HomePage {
       this.obstaculos.limpar();
       this.bloco.valocidade = 0;
       this.bloco.y = 0;
-      this.bloco.score = 0;
+      this.bloco.reset();
     }
-    
   }
 
   main(){
@@ -185,6 +188,13 @@ export class HomePage {
     document.addEventListener("mousedown", this.clique);
     this.obstaculos.inserir();
     this.estadoAtual = this.estados.jogar;
+    
+    this.record = localStorage.getItem("record");
+
+    if(this.record == null){
+      this.record = 0;
+    }
+    
     this.rodar();
   }
  
@@ -223,6 +233,10 @@ export class HomePage {
       this.ctx.save();
       this.ctx.translate(this.LARGURA / 2, this.ALTURA / 2);
       this.ctx.fillStyle = "#FFF";
+
+      if(this.bloco.score > this.record){
+        this.ctx.fillText("Novo Record!", -150, -65);
+      }
       
       if(this.bloco.score < 10){
         this.ctx.fillText(this.bloco.score, -13, 19);  
